@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -51,6 +52,28 @@ func mkdir(path, token string) error {
 	}
 
 	return nil
+}
+
+func publish(token string) (string, error) {
+	remote := strings.TrimSuffix(globalFlags.remoteDrive, "/") +
+		"/publish/blau.io/PUBLIC"
+	req, err := http.NewRequest("GET", remote, nil)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	defer resp.Body.Close()
+	address, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(address), err
 }
 
 func recursiveDelete(root, token string) error {

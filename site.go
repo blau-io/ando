@@ -41,8 +41,6 @@ func (s *Site) CreatePage(name string, wg *sync.WaitGroup) {
 		return
 	}
 
-	log.Println("Getting file content")
-
 	req.AddCookie(&http.Cookie{
 		Name:  "token",
 		Value: s.Token,
@@ -61,11 +59,24 @@ func (s *Site) CreatePage(name string, wg *sync.WaitGroup) {
 		return
 	}
 
+	header, err := ioutil.ReadFile("html/header.html")
+	if err != nil {
+		log.Printf("Error loading header.html: %v", err)
+		return
+	}
+
+	footer, err := ioutil.ReadFile("html/footer.html")
+	if err != nil {
+		log.Printf("Error loading footer.html: %v", err)
+		return
+	}
+
+	reqBody := string(header) + mark.Render(string(body)) + string(footer)
+
 	name = strings.Replace(name, ".md", ".html", -1)
 	remote = strings.TrimSuffix(globalFlags.remoteDrive, "/") +
 		"/add/blau.io/PUBLIC/" + name
-	reqBody := strings.NewReader(mark.Render(string(body)))
-	req, err = http.NewRequest("POST", remote, reqBody)
+	req, err = http.NewRequest("POST", remote, strings.NewReader(reqBody))
 	if err != nil {
 		log.Printf("Error while creating request: %v", err)
 		return
