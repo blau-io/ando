@@ -95,7 +95,15 @@ func setup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = upload("example/hello.md", "/blau.io/content/hello.md", token.Value)
+	err = upload("html/main.css", "/blau.io/PUBLIC/main.css",
+		token.Value)
+	if err != nil {
+		log.Printf("Could not upload index.html: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	err = upload("example/index.md", "/blau.io/content/index.md", token.Value)
 	if err != nil {
 		log.Printf("Could not upload hello.md: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
