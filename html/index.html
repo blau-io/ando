@@ -1,8 +1,33 @@
 <html>
     <head>
-        <title>Dashboard</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Change your page settings">
+        <title>Blau.io - Settings</title>
+
+        <link rel="stylesheet" href="main.css">
     </head>
     <body>
-        <h1>Dashboard</h1>
+        <header>
+            <h1>Settings</h1>
+        </header>
+        <main>
+            <p>Hey, you've made it to the settings page. As this is still a very
+            early version of our Software, there's not much to do so far.
+            You can choose a domain name below and generate your page by
+            clicking "Generate".</p>
+            <p>Oh and please feel free to look at the folders we've created in
+            your Google Drive.</p>
+
+            <form method="POST" action="/submit">
+                <label for="domain">
+                    http://
+                    <input type="text" name="domain" id="domain" required>
+                    .blau.io
+                </label>
+                <input type="submit" value="Generate" class="button">
+            </form>
+        </main>
     </body>
 </html>

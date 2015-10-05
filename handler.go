@@ -22,6 +22,15 @@ func render(w http.ResponseWriter, r *http.Request) {
 		Token: token.Value,
 	}
 	s.Build()
+
+	address, err := publish(token.Value)
+	if err != nil {
+		log.Printf("Failed to publish public folder: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, address)
 }
 
 func setup(w http.ResponseWriter, r *http.Request) {
@@ -78,19 +87,18 @@ func setup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = upload("html/main.css", "/blau.io/configuration/main.css",
+		token.Value)
+	if err != nil {
+		log.Printf("Could not upload index.html: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
 	err = upload("example/hello.md", "/blau.io/content/hello.md", token.Value)
 	if err != nil {
 		log.Printf("Could not upload hello.md: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
-	address, err := publish(token.Value)
-	if err != nil {
-		log.Printf("Failed to publish public folder: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprint(w, address)
 }

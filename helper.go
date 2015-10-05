@@ -62,12 +62,16 @@ func publish(token string) (string, error) {
 		return "", err
 	}
 
+	req.AddCookie(&http.Cookie{
+		Name:  "token",
+		Value: token,
+	})
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
 
-	defer resp.Body.Close()
 	address, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err

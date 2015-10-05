@@ -52,7 +52,6 @@ func (s *Site) CreatePage(name string, wg *sync.WaitGroup) {
 		return
 	}
 
-	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Printf("Error while reading response: %v", err)
@@ -71,9 +70,25 @@ func (s *Site) CreatePage(name string, wg *sync.WaitGroup) {
 		return
 	}
 
+	name = strings.Replace(name, ".md", ".html", -1)
+
+	remote = strings.TrimSuffix(globalFlags.remoteDrive, "/") +
+		"/delete/blau.io/PUBLIC/" + name
+	req, err = http.NewRequest("DELETE", remote, nil)
+	if err != nil {
+		log.Printf("Couldn't create new request: %v", err)
+		return
+	}
+
+	req.AddCookie(&http.Cookie{
+		Name:  "token",
+		Value: s.Token,
+	})
+
+	_, _ = client.Do(req) // Fail gracefully
+
 	reqBody := string(header) + mark.Render(string(body)) + string(footer)
 
-	name = strings.Replace(name, ".md", ".html", -1)
 	remote = strings.TrimSuffix(globalFlags.remoteDrive, "/") +
 		"/add/blau.io/PUBLIC/" + name
 	req, err = http.NewRequest("POST", remote, strings.NewReader(reqBody))
